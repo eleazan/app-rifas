@@ -140,14 +140,14 @@ export default function Rifa({ raffle }) {
 
                 {/* Organizer */}
                 {raffle.organizer && (
-                    <div className="flex items-center justify-center gap-4 py-4">
+                    <div className="flex flex-col items-center gap-4 py-6 px-6 mx-auto max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm">
                         {raffle.organizer.logo && (
                             <img src={raffle.organizer.logo} alt={raffle.organizer.name}
-                                 className="w-14 h-14 rounded-xl object-cover border border-white/10" />
+                                 className="w-24 h-24 rounded-2xl object-cover border-2 border-amber-500/30 shadow-lg shadow-amber-500/10" />
                         )}
-                        <div>
-                            <p className="text-xs text-slate-500 uppercase tracking-wider">Organizado por</p>
-                            <p className="text-lg font-bold text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                        <div className="text-center">
+                            <p className="text-xs text-amber-400/70 uppercase tracking-widest font-medium mb-1">Organizado por</p>
+                            <p className="text-xl font-bold text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
                                 {raffle.organizer.name}
                             </p>
                         </div>
