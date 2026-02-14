@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTicketRequest;
-use App\Models\BuyerNotifiable;
 use App\Models\Raffle;
 use App\Models\Seller;
 use App\Models\Ticket;
 use App\Models\TicketLock;
-use App\Notifications\TicketPurchasedNotification;
+use App\Services\NotificationLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -119,18 +118,9 @@ class TicketController extends Controller
             ->whereIn('number', $data['numbers'])
             ->delete();
 
-        try {
-            $raffle = Raffle::find($data['raffle_id']);
-            $ticketData = collect($tickets)->map(fn ($t) => $t->toArray())->all();
-            $buyer = new BuyerNotifiable(
-                $data['buyer_name'],
-                $data['buyer_email'] ?? null,
-                $data['buyer_phone'] ?? null,
-            );
-            $buyer->notify(new TicketPurchasedNotification($ticketData, $raffle->name, $raffle->ticket_price));
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Ticket notification failed: ' . $e->getMessage());
-        }
+        $raffle = Raffle::find($data['raffle_id']);
+        $ticketData = collect($tickets)->map(fn ($t) => $t->toArray())->all();
+        app(NotificationLogService::class)->sendAndLog($saleId, $ticketData, $raffle, $data['seller_id']);
 
         return redirect()->route('tickets.create')
             ->with('success', "{$count} " . ($count === 1 ? 'boleto vendido' : 'boletos vendidos') . ' correctamente.');

@@ -13,14 +13,28 @@ class TicketPurchasedNotification extends Notification
 {
     use Queueable;
 
+    protected ?array $onlyChannels = null;
+
     public function __construct(
         protected array $tickets,
         protected string $raffleName,
         protected string $ticketPrice,
+        protected string $raffleUrl,
     ) {}
+
+    public function onlyVia(string ...$channels): static
+    {
+        $clone = clone $this;
+        $clone->onlyChannels = $channels;
+        return $clone;
+    }
 
     public function via(object $notifiable): array
     {
+        if ($this->onlyChannels !== null) {
+            return $this->onlyChannels;
+        }
+
         $channels = [];
 
         $first = $this->tickets[0] ?? null;
@@ -28,11 +42,11 @@ class TicketPurchasedNotification extends Notification
             return $channels;
         }
 
-        if ($first['contact_method'] === 'email' && !empty($first['buyer_email'])) {
+        if (!empty($first['buyer_email'])) {
             $channels[] = 'mail';
         }
 
-        if ($first['contact_method'] === 'whatsapp' && !empty($first['buyer_phone'])) {
+        if (!empty($first['buyer_phone'])) {
             $channels[] = 'whatsapp';
         }
 
@@ -51,23 +65,30 @@ class TicketPurchasedNotification extends Notification
             ->greeting("Hola {$first['buyer_name']}!")
             ->line("Gracias por tu compra en la rifa **{$this->raffleName}**.")
             ->line("**Numero{$this->plural($count)}:** {$numbers}")
-            ->line("**Total:** \${$total}")
-            ->line('Te notificaremos si resultas ganador. Mucha suerte!');
+            ->line("**Total:** {$total}€")
+            ->line('Te notificaremos si resultas ganador. Mucha suerte!')
+            ->action('Ver premios de la rifa', $this->raffleUrl);
     }
 
-    public function toWhatsapp(object $notifiable): void
+    public function getWhatsappMessage(): string
     {
         $first = $this->tickets[0];
         $numbers = collect($this->tickets)->pluck('number')->sort()->implode(', ');
         $count = count($this->tickets);
         $total = number_format($count * (float) $this->ticketPrice, 2);
 
-        $message = "🎟️ *{$this->raffleName}*\n\n"
+        return "🎟️ *{$this->raffleName}*\n\n"
             . "Hola {$first['buyer_name']}!\n"
             . "Tu" . $this->plural($count) . " boleto" . $this->plural($count) . ": *{$numbers}*\n"
-            . "Total: \${$total}\n\n"
+            . "Total: {$total}€\n\n"
+            . "🏆 Ver premios: {$this->raffleUrl}\n\n"
             . "Te avisaremos si ganas. Mucha suerte! 🍀";
+    }
 
+    public function toWhatsapp(object $notifiable): void
+    {
+        $first = $this->tickets[0];
+        $message = $this->getWhatsappMessage();
         app(EvolutionApiService::class)->sendText($first['buyer_phone'], $message);
     }
 

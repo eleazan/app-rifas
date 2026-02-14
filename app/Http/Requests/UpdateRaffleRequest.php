@@ -21,6 +21,9 @@ class UpdateRaffleRequest extends FormRequest
             'ticket_price' => 'required|numeric|min:0.01',
             'total_numbers' => 'required|integer|min:1|max:100000',
             'status' => ['required', Rule::in(['draft', 'active', 'completed'])],
+            'organizer_id' => 'nullable|exists:organizers,id',
+            'sponsors' => 'nullable|array',
+            'sponsors.*' => 'exists:sponsors,id',
         ];
     }
 

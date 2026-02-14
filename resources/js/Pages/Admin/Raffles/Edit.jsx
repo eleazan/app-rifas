@@ -1,14 +1,25 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function Edit({ raffle }) {
+export default function Edit({ raffle, organizers, sponsors }) {
     const { data, setData, put, processing, errors } = useForm({
         name: raffle.name,
         description: raffle.description || '',
         ticket_price: raffle.ticket_price,
         total_numbers: raffle.total_numbers,
         status: raffle.status,
+        organizer_id: raffle.organizer_id || '',
+        sponsors: raffle.sponsors || [],
     });
+
+    const toggleSponsor = (id) => {
+        const current = data.sponsors;
+        if (current.includes(id)) {
+            setData('sponsors', current.filter((s) => s !== id));
+        } else {
+            setData('sponsors', [...current, id]);
+        }
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -51,7 +62,7 @@ export default function Edit({ raffle }) {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="form-control w-full">
                                 <label className="label">
-                                    <span className="label-text font-medium text-slate-700">Precio ($)</span>
+                                    <span className="label-text font-medium text-slate-700">Precio (€)</span>
                                 </label>
                                 <input
                                     type="number"
@@ -94,6 +105,45 @@ export default function Edit({ raffle }) {
                                 {errors.status && <label className="label"><span className="label-text-alt text-error">{errors.status}</span></label>}
                             </div>
                         </div>
+
+                        <div className="form-control w-full">
+                            <label className="label">
+                                <span className="label-text font-medium text-slate-700">Organizador</span>
+                            </label>
+                            <select
+                                className={`select select-bordered w-full ${errors.organizer_id ? 'select-error' : ''}`}
+                                value={data.organizer_id}
+                                onChange={(e) => setData('organizer_id', e.target.value || null)}
+                            >
+                                <option value="">Sin organizador</option>
+                                {organizers.map((org) => (
+                                    <option key={org.id} value={org.id}>{org.name}</option>
+                                ))}
+                            </select>
+                            {errors.organizer_id && <label className="label"><span className="label-text-alt text-error">{errors.organizer_id}</span></label>}
+                        </div>
+
+                        {sponsors.length > 0 && (
+                            <div className="form-control w-full">
+                                <label className="label">
+                                    <span className="label-text font-medium text-slate-700">Patrocinadores</span>
+                                </label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {sponsors.map((sponsor) => (
+                                        <label key={sponsor.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="checkbox checkbox-sm checkbox-warning"
+                                                checked={data.sponsors.includes(sponsor.id)}
+                                                onChange={() => toggleSponsor(sponsor.id)}
+                                            />
+                                            <span className="text-sm text-slate-700">{sponsor.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                {errors.sponsors && <label className="label"><span className="label-text-alt text-error">{errors.sponsors}</span></label>}
+                            </div>
+                        )}
 
                         <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                             <button type="submit" disabled={processing}

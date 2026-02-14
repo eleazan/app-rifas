@@ -4,7 +4,8 @@
       "Bash(npm run build:*)",
       "Bash(php artisan migrate:*)",
       "Bash(php artisan:*)",
-      "Bash(php artisan make:request:*)"
+      "Bash(php artisan make:request:*)",
+      "Bash(dir:*)"
     ]
   }
 }
