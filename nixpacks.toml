@@ -7,8 +7,18 @@ cmds = [
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh",
+    "mkdir -p /var/log /app/storage/framework/views /app/storage/framework/cache /app/storage/framework/sessions /app/bootstrap/cache",
+    "chown -R www-data:www-data /var/log /app/storage /app/bootstrap/cache",
     "..."
 ]
+
+[phases.postbuild]
+cmds = [
+    "php artisan view:clear",
+    "php artisan cache:clear",
+]
+
+dependsOn = ["build"]
 
 [start]
 cmd = '/assets/start.sh'
