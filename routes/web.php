@@ -15,6 +15,7 @@ use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\TicketLockController;
 use App\Http\Controllers\WhatsappSettingController;
+use App\Http\Controllers\GmailSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,6 +41,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('settings/whatsapp/status', [WhatsappSettingController::class, 'status'])->name('settings.whatsapp.status');
     Route::post('settings/whatsapp/deactivate', [WhatsappSettingController::class, 'deactivate'])->name('settings.whatsapp.deactivate');
     Route::post('settings/whatsapp/test', [WhatsappSettingController::class, 'test'])->name('settings.whatsapp.test');
+
+    Route::get('settings/gmail', [GmailSettingController::class, 'show'])->name('settings.gmail');
+    Route::get('settings/gmail/redirect', [GmailSettingController::class, 'redirect'])->name('settings.gmail.redirect');
+    Route::get('settings/gmail/callback', [GmailSettingController::class, 'callback'])->name('settings.gmail.callback');
+    Route::post('settings/gmail/disconnect', [GmailSettingController::class, 'disconnect'])->name('settings.gmail.disconnect');
+    Route::post('settings/gmail/test', [GmailSettingController::class, 'test'])->name('settings.gmail.test');
 });
 
 Route::middleware(['auth', 'role:admin,seller'])->group(function () {

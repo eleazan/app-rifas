@@ -52,6 +52,11 @@ const adminLinks = [
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
     )},
+    { href: 'settings.gmail', label: 'Gmail', icon: (
+        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+    )},
 ];
 
 const sellerLinks = [

@@ -6,6 +6,7 @@ use App\Models\BuyerNotifiable;
 use App\Models\NotificationLog;
 use App\Models\Raffle;
 use App\Notifications\TicketPurchasedNotification;
+use App\Services\GmailService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -66,7 +67,17 @@ class NotificationLogService
 
         try {
             if ($channel === 'email') {
-                $buyer->notify($notification->onlyVia('mail'));
+                $gmail = app(GmailService::class);
+                if ($gmail->isConnected()) {
+                    $mailMessage = $notification->toMail($buyer);
+                    $gmail->sendEmail(
+                        $buyer->email,
+                        $mailMessage->subject ?? 'Confirmación de boletos',
+                        $gmail->buildHtmlFromMailMessage($mailMessage)
+                    );
+                } else {
+                    $buyer->notify($notification->onlyVia('mail'));
+                }
             } else {
                 $notification->toWhatsapp($buyer);
             }
@@ -119,7 +130,17 @@ class NotificationLogService
             $raffle->draw_date?->format('d/m/Y'),
         );
 
-        $buyer->notify($notification->onlyVia('mail'));
+        $gmail = app(GmailService::class);
+        if ($gmail->isConnected()) {
+            $mailMessage = $notification->toMail($buyer);
+            $gmail->sendEmail(
+                $log->recipient,
+                $mailMessage->subject ?? 'Confirmación de boletos',
+                $gmail->buildHtmlFromMailMessage($mailMessage)
+            );
+        } else {
+            $buyer->notify($notification->onlyVia('mail'));
+        }
     }
 
     public function resendWhatsapp(NotificationLog $log): void
