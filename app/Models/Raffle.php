@@ -17,6 +17,7 @@ class Raffle extends Model
         'ticket_price',
         'total_numbers',
         'status',
+        'draw_date',
         'organizer_id',
     ];
 
@@ -53,6 +54,7 @@ class Raffle extends Model
     {
         return [
             'ticket_price' => 'decimal:2',
+            'draw_date' => 'date',
         ];
     }
 

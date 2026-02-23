@@ -20,6 +20,7 @@ class TicketPurchasedNotification extends Notification
         protected string $raffleName,
         protected string $ticketPrice,
         protected string $raffleUrl,
+        protected ?string $drawDate = null,
     ) {}
 
     public function onlyVia(string ...$channels): static
@@ -66,6 +67,7 @@ class TicketPurchasedNotification extends Notification
             ->line("Gracias por tu compra en la rifa **{$this->raffleName}**.")
             ->line("**Numero{$this->plural($count)}:** {$numbers}")
             ->line("**Total:** {$total}€")
+            ->when($this->drawDate, fn ($mail) => $mail->line("**Fecha del sorteo:** {$this->drawDate}"))
             ->line('Te notificaremos si resultas ganador. Mucha suerte!')
             ->action('Ver premios de la rifa', $this->raffleUrl);
     }
@@ -77,10 +79,13 @@ class TicketPurchasedNotification extends Notification
         $count = count($this->tickets);
         $total = number_format($count * (float) $this->ticketPrice, 2);
 
+        $drawLine = $this->drawDate ? "📅 Fecha del sorteo: {$this->drawDate}\n" : '';
+
         return "🎟️ *{$this->raffleName}*\n\n"
             . "Hola {$first['buyer_name']}!\n"
             . "Tu" . $this->plural($count) . " boleto" . $this->plural($count) . ": *{$numbers}*\n"
-            . "Total: {$total}€\n\n"
+            . "Total: {$total}€\n"
+            . $drawLine . "\n"
             . "🏆 Ver premios: {$this->raffleUrl}\n\n"
             . "Te avisaremos si ganas. Mucha suerte! 🍀";
     }

@@ -46,6 +46,7 @@ class PublicRaffleController extends Controller
                 'ticket_price' => $raffle->ticket_price,
                 'total_numbers' => $raffle->total_numbers,
                 'status' => $raffle->status,
+                'draw_date' => $raffle->draw_date?->format('Y-m-d'),
                 'sold_count' => $soldCount,
                 'prizes' => $raffle->prizes->map(fn ($p) => [
                     'id' => $p->id,

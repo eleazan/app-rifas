@@ -66,6 +66,11 @@ export default function Rifa({ raffle }) {
     }
 
     const drawnCount = raffle.prizes.filter(p => p.is_drawn).length;
+
+    const formatDrawDate = (dateStr) => {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    };
     const progress = raffle.total_numbers > 0
         ? Math.round((raffle.sold_count / raffle.total_numbers) * 100)
         : 0;
@@ -97,6 +102,17 @@ export default function Rifa({ raffle }) {
 
                     {raffle.description && (
                         <p className="text-slate-400 text-lg max-w-2xl mx-auto">{raffle.description}</p>
+                    )}
+
+                    {raffle.draw_date && (
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                            <svg className="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-amber-300 text-sm font-medium">
+                                Sorteo el {formatDrawDate(raffle.draw_date)}
+                            </span>
+                        </div>
                     )}
 
                     {/* Stats */}
@@ -154,25 +170,6 @@ export default function Rifa({ raffle }) {
                     </div>
                 )}
 
-                {/* Prizes */}
-                <div>
-                    <h2 className="text-2xl font-bold text-white mb-6 text-center"
-                        style={{ fontFamily: "'Outfit', sans-serif" }}>
-                        Premios
-                        {drawnCount > 0 && (
-                            <span className="text-sm font-normal text-slate-500 ml-2">
-                                ({drawnCount}/{raffle.prizes.length} sorteados)
-                            </span>
-                        )}
-                    </h2>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {raffle.prizes.map((prize, i) => (
-                            <PrizeCard key={prize.id} prize={prize} index={i} />
-                        ))}
-                    </div>
-                </div>
-
                 {/* Sponsors */}
                 {raffle.sponsors && raffle.sponsors.length > 0 && (
                     <div className="py-8">
@@ -206,6 +203,25 @@ export default function Rifa({ raffle }) {
                         </div>
                     </div>
                 )}
+
+                {/* Prizes */}
+                <div>
+                    <h2 className="text-2xl font-bold text-white mb-6 text-center"
+                        style={{ fontFamily: "'Outfit', sans-serif" }}>
+                        Premios
+                        {drawnCount > 0 && (
+                            <span className="text-sm font-normal text-slate-500 ml-2">
+                                ({drawnCount}/{raffle.prizes.length} sorteados)
+                            </span>
+                        )}
+                    </h2>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {raffle.prizes.map((prize, i) => (
+                            <PrizeCard key={prize.id} prize={prize} index={i} />
+                        ))}
+                    </div>
+                </div>
             </div>
         </PublicLayout>
     );

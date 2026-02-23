@@ -7,6 +7,7 @@ export default function Create({ organizers, sponsors }) {
         description: '',
         ticket_price: '',
         total_numbers: '',
+        draw_date: '',
         organizer_id: '',
         sponsors: [],
     });
@@ -91,6 +92,19 @@ export default function Create({ organizers, sponsors }) {
                                 />
                                 {errors.total_numbers && <label className="label"><span className="label-text-alt text-error">{errors.total_numbers}</span></label>}
                             </div>
+                        </div>
+
+                        <div className="form-control w-full">
+                            <label className="label">
+                                <span className="label-text font-medium text-slate-700">Fecha del sorteo</span>
+                            </label>
+                            <input
+                                type="date"
+                                className={`input input-bordered w-full ${errors.draw_date ? 'input-error' : ''}`}
+                                value={data.draw_date}
+                                onChange={(e) => setData('draw_date', e.target.value)}
+                            />
+                            {errors.draw_date && <label className="label"><span className="label-text-alt text-error">{errors.draw_date}</span></label>}
                         </div>
 
                         <div className="form-control w-full">

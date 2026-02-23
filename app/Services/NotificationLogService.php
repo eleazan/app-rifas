@@ -29,6 +29,7 @@ class NotificationLogService
             $raffle->name,
             $raffle->ticket_price,
             route('rifa.show', $raffle->slug),
+            $raffle->draw_date?->format('d/m/Y'),
         );
 
         if (!empty($first['buyer_email'])) {
@@ -115,6 +116,7 @@ class NotificationLogService
             $raffle->name,
             $raffle->ticket_price,
             route('rifa.show', $raffle->slug),
+            $raffle->draw_date?->format('d/m/Y'),
         );
 
         $buyer->notify($notification->onlyVia('mail'));

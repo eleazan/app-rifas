@@ -8,6 +8,7 @@ export default function Edit({ raffle, organizers, sponsors }) {
         ticket_price: raffle.ticket_price,
         total_numbers: raffle.total_numbers,
         status: raffle.status,
+        draw_date: raffle.draw_date || '',
         organizer_id: raffle.organizer_id || '',
         sponsors: raffle.sponsors || [],
     });
@@ -104,6 +105,19 @@ export default function Edit({ raffle, organizers, sponsors }) {
                                 </select>
                                 {errors.status && <label className="label"><span className="label-text-alt text-error">{errors.status}</span></label>}
                             </div>
+                        </div>
+
+                        <div className="form-control w-full">
+                            <label className="label">
+                                <span className="label-text font-medium text-slate-700">Fecha del sorteo</span>
+                            </label>
+                            <input
+                                type="date"
+                                className={`input input-bordered w-full ${errors.draw_date ? 'input-error' : ''}`}
+                                value={data.draw_date}
+                                onChange={(e) => setData('draw_date', e.target.value)}
+                            />
+                            {errors.draw_date && <label className="label"><span className="label-text-alt text-error">{errors.draw_date}</span></label>}
                         </div>
 
                         <div className="form-control w-full">
