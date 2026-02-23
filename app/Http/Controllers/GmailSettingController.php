@@ -70,14 +70,14 @@ class GmailSettingController extends Controller
             return response()->json(['message' => 'Gmail no está conectado.'], 422);
         }
 
-        $sent = $this->gmail->sendEmail(
-            $request->email,
-            'Prueba de correo — RifaApp',
-            '<p>Este es un correo de prueba enviado desde <strong>RifaApp</strong> via Gmail.</p>'
-        );
-
-        if (!$sent) {
-            return response()->json(['message' => 'No se pudo enviar el correo.'], 422);
+        try {
+            $this->gmail->sendEmail(
+                $request->email,
+                'Prueba de correo — RifaApp',
+                '<p>Este es un correo de prueba enviado desde <strong>RifaApp</strong> via Gmail.</p>'
+            );
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
 
         return response()->json(['success' => true]);

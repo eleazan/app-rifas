@@ -106,19 +106,21 @@ class GmailService
         return $email ?: null;
     }
 
-    public function sendEmail(string $to, string $subject, string $htmlBody): bool
+    public function sendEmail(string $to, string $subject, string $htmlBody): void
     {
         if (!$this->refreshIfNeeded()) {
-            return false;
+            throw new \RuntimeException('No se pudo refrescar el token de Gmail. Reconecta la cuenta en Ajustes.');
         }
 
         $accessToken = Setting::get('gmail_access_token');
         $from = $this->getConnectedEmail();
 
+        $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+
         $mime = implode("\r\n", [
             "From: {$from}",
             "To: {$to}",
-            "Subject: {$subject}",
+            "Subject: {$encodedSubject}",
             'MIME-Version: 1.0',
             'Content-Type: text/html; charset=UTF-8',
             '',
@@ -131,7 +133,10 @@ class GmailService
             'raw' => $encoded,
         ]);
 
-        return $response->successful();
+        if (!$response->successful()) {
+            $error = $response->json('error.message') ?? $response->body();
+            throw new \RuntimeException("Gmail API error ({$response->status()}): {$error}");
+        }
     }
 
     public function buildHtmlFromMailMessage(MailMessage $msg): string

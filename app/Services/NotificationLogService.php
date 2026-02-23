@@ -91,7 +91,7 @@ class NotificationLogService
                 'status' => 'failed',
                 'error' => $e->getMessage(),
             ]);
-            Log::warning("Notification ({$channel}) failed: " . $e->getMessage());
+            Log::error("Notification ({$channel}) failed for {$recipient}: " . $e->getMessage());
         }
     }
 
