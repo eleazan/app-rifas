@@ -16,7 +16,7 @@ class EvolutionApiService
     {
         $this->baseUrl = rtrim(config('services.evolution.url', ''), '/');
         $this->apiKey = config('services.evolution.key', '');
-        $this->instance = Setting::get('whatsapp_instance', config('services.evolution.instance', ''));
+        $this->instance = Setting::get('whatsapp_instance', config('services.evolution.instance', '')) ?? '';
     }
 
     public function isConfigured(): bool
