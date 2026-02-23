@@ -132,8 +132,19 @@ export default function Rifa({ raffle }) {
                             <p className="text-3xl font-extrabold text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
                                 {raffle.ticket_price}€
                             </p>
-                            <p className="text-xs text-slate-500 uppercase tracking-wider">por boleto</p>
+                            <p className="text-xs text-slate-500 uppercase tracking-wider">1 boleto</p>
                         </div>
+                        {raffle.bulk_price && raffle.bulk_from && (
+                            <>
+                                <div className="w-px h-10 bg-white/10"></div>
+                                <div className="text-center">
+                                    <p className="text-3xl font-extrabold text-amber-400" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                                        {raffle.bulk_price}€
+                                    </p>
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider">{raffle.bulk_from}+ boletos</p>
+                                </div>
+                            </>
+                        )}
                         <div className="w-px h-10 bg-white/10"></div>
                         <div className="text-center">
                             <p className="text-3xl font-extrabold text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>

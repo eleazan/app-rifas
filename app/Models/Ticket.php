@@ -12,6 +12,7 @@ class Ticket extends Model
         'raffle_id',
         'seller_id',
         'number',
+        'price_paid',
         'buyer_name',
         'buyer_email',
         'buyer_phone',
@@ -22,6 +23,7 @@ class Ticket extends Model
     protected function casts(): array
     {
         return [
+            'price_paid' => 'decimal:2',
             'notified_at' => 'datetime',
         ];
     }

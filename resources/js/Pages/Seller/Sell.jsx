@@ -92,7 +92,13 @@ export default function Sell({ raffle, soldNumbers, lockedNumbers: initialLocked
         axios.post(route('ticket-locks.release'), { raffle_id: raffle.id }).catch(() => {});
     };
 
-    const total = data.numbers.length * parseFloat(raffle.ticket_price);
+    const calcTotal = (count) => {
+        if (raffle.bulk_price && raffle.bulk_from && count >= parseInt(raffle.bulk_from)) {
+            return count * parseFloat(raffle.bulk_price);
+        }
+        return count * parseFloat(raffle.ticket_price);
+    };
+    const total = calcTotal(data.numbers.length);
 
     const submit = (e) => {
         e.preventDefault();
@@ -112,6 +118,11 @@ export default function Sell({ raffle, soldNumbers, lockedNumbers: initialLocked
                     <div className="border-l border-slate-200 pl-4">
                         <p className="text-xs text-slate-400">Precio</p>
                         <p className="font-bold text-slate-800">{raffle.ticket_price}€</p>
+                        {raffle.bulk_price && raffle.bulk_from && (
+                            <p className="text-xs text-slate-400 mt-0.5">
+                                {raffle.bulk_from}+ boletos: {raffle.bulk_price}€ c/u
+                            </p>
+                        )}
                     </div>
                     {data.numbers.length > 0 && (
                         <div className="ml-auto flex items-center gap-3">

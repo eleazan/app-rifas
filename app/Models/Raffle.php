@@ -15,6 +15,8 @@ class Raffle extends Model
         'slug',
         'description',
         'ticket_price',
+        'bulk_price',
+        'bulk_from',
         'total_numbers',
         'status',
         'draw_date',
@@ -54,6 +56,8 @@ class Raffle extends Model
     {
         return [
             'ticket_price' => 'decimal:2',
+            'bulk_price' => 'decimal:2',
+            'bulk_from' => 'integer',
             'draw_date' => 'date',
         ];
     }

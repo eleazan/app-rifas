@@ -6,6 +6,8 @@ export default function Create({ organizers, sponsors }) {
         name: '',
         description: '',
         ticket_price: '',
+        bulk_from: '',
+        bulk_price: '',
         total_numbers: '',
         draw_date: '',
         organizer_id: '',
@@ -92,6 +94,47 @@ export default function Create({ organizers, sponsors }) {
                                 />
                                 {errors.total_numbers && <label className="label"><span className="label-text-alt text-error">{errors.total_numbers}</span></label>}
                             </div>
+                        </div>
+
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                            <p className="text-sm font-medium text-slate-600">Precio lote <span className="text-slate-400 font-normal">(opcional)</span></p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="form-control w-full">
+                                    <label className="label py-1">
+                                        <span className="label-text text-slate-600">Minimo boletos</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="2"
+                                        className={`input input-bordered w-full bg-white ${errors.bulk_from ? 'input-error' : ''}`}
+                                        value={data.bulk_from}
+                                        onChange={(e) => setData('bulk_from', e.target.value)}
+                                        placeholder="2"
+                                    />
+                                    {errors.bulk_from && <label className="label"><span className="label-text-alt text-error">{errors.bulk_from}</span></label>}
+                                </div>
+                                <div className="form-control w-full">
+                                    <label className="label py-1">
+                                        <span className="label-text text-slate-600">Precio lote (€ c/u)</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0.01"
+                                        className={`input input-bordered w-full bg-white ${errors.bulk_price ? 'input-error' : ''}`}
+                                        value={data.bulk_price}
+                                        onChange={(e) => setData('bulk_price', e.target.value)}
+                                        placeholder="2.50"
+                                    />
+                                    {errors.bulk_price && <label className="label"><span className="label-text-alt text-error">{errors.bulk_price}</span></label>}
+                                </div>
+                            </div>
+                            {data.bulk_from >= 2 && data.bulk_price > 0 && (
+                                <p className="text-xs text-slate-500">
+                                    Vista previa: {data.bulk_from} boletos = {(data.bulk_from * parseFloat(data.bulk_price)).toFixed(2)}€
+                                    {' · '}{parseInt(data.bulk_from) + 1} = {((parseInt(data.bulk_from) + 1) * parseFloat(data.bulk_price)).toFixed(2)}€
+                                </p>
+                            )}
                         </div>
 
                         <div className="form-control w-full">

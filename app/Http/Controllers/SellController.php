@@ -59,12 +59,19 @@ class SellController extends Controller
         $saleId = Str::uuid()->toString();
         $tickets = [];
 
+        $raffle = Raffle::find($data['raffle_id']);
+        $count = count($data['numbers']);
+        $pricePaid = ($raffle->bulk_price && $raffle->bulk_from && $count >= $raffle->bulk_from)
+            ? $raffle->bulk_price
+            : $raffle->ticket_price;
+
         foreach ($data['numbers'] as $number) {
             $tickets[] = Ticket::create([
                 'sale_id' => $saleId,
                 'raffle_id' => $data['raffle_id'],
                 'seller_id' => $data['seller_id'],
                 'number' => $number,
+                'price_paid' => $pricePaid,
                 'buyer_name' => $data['buyer_name'],
                 'buyer_email' => $data['buyer_email'] ?? null,
                 'buyer_phone' => $data['buyer_phone'] ?? null,
@@ -78,8 +85,6 @@ class SellController extends Controller
             ->where('user_id', $request->user()->id)
             ->whereIn('number', $data['numbers'])
             ->delete();
-
-        $raffle = Raffle::find($data['raffle_id']);
         $ticketData = collect($tickets)->map(fn ($t) => $t->toArray())->all();
         app(NotificationLogService::class)->sendAndLog($saleId, $ticketData, $raffle, $data['seller_id']);
 

@@ -6,6 +6,8 @@ export default function Edit({ raffle, organizers, sponsors }) {
         name: raffle.name,
         description: raffle.description || '',
         ticket_price: raffle.ticket_price,
+        bulk_from: raffle.bulk_from || '',
+        bulk_price: raffle.bulk_price || '',
         total_numbers: raffle.total_numbers,
         status: raffle.status,
         draw_date: raffle.draw_date || '',
@@ -76,6 +78,7 @@ export default function Edit({ raffle, organizers, sponsors }) {
                                 {errors.ticket_price && <label className="label"><span className="label-text-alt text-error">{errors.ticket_price}</span></label>}
                             </div>
 
+
                             <div className="form-control w-full">
                                 <label className="label">
                                     <span className="label-text font-medium text-slate-700">Total numeros</span>
@@ -105,6 +108,47 @@ export default function Edit({ raffle, organizers, sponsors }) {
                                 </select>
                                 {errors.status && <label className="label"><span className="label-text-alt text-error">{errors.status}</span></label>}
                             </div>
+                        </div>
+
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                            <p className="text-sm font-medium text-slate-600">Precio lote <span className="text-slate-400 font-normal">(opcional)</span></p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="form-control w-full">
+                                    <label className="label py-1">
+                                        <span className="label-text text-slate-600">Minimo boletos</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="2"
+                                        className={`input input-bordered w-full bg-white ${errors.bulk_from ? 'input-error' : ''}`}
+                                        value={data.bulk_from}
+                                        onChange={(e) => setData('bulk_from', e.target.value)}
+                                        placeholder="2"
+                                    />
+                                    {errors.bulk_from && <label className="label"><span className="label-text-alt text-error">{errors.bulk_from}</span></label>}
+                                </div>
+                                <div className="form-control w-full">
+                                    <label className="label py-1">
+                                        <span className="label-text text-slate-600">Precio lote (€ c/u)</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0.01"
+                                        className={`input input-bordered w-full bg-white ${errors.bulk_price ? 'input-error' : ''}`}
+                                        value={data.bulk_price}
+                                        onChange={(e) => setData('bulk_price', e.target.value)}
+                                        placeholder="2.50"
+                                    />
+                                    {errors.bulk_price && <label className="label"><span className="label-text-alt text-error">{errors.bulk_price}</span></label>}
+                                </div>
+                            </div>
+                            {data.bulk_from >= 2 && data.bulk_price > 0 && (
+                                <p className="text-xs text-slate-500">
+                                    Vista previa: {data.bulk_from} boletos = {(data.bulk_from * parseFloat(data.bulk_price)).toFixed(2)}€
+                                    {' · '}{parseInt(data.bulk_from) + 1} = {((parseInt(data.bulk_from) + 1) * parseFloat(data.bulk_price)).toFixed(2)}€
+                                </p>
+                            )}
                         </div>
 
                         <div className="form-control w-full">

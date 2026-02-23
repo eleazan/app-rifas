@@ -42,8 +42,7 @@ class MySalesController extends Controller
         })->values();
 
         $totalTickets = $tickets->count();
-        $ticketPrice = $activeRaffle ? (float) $activeRaffle->ticket_price : 0;
-        $totalRevenue = $totalTickets * $ticketPrice;
+        $totalRevenue = (float) $tickets->sum('price_paid');
         $commission = $totalRevenue * ((float) $seller->commission_pct / 100);
 
         return Inertia::render('Seller/MySales', [

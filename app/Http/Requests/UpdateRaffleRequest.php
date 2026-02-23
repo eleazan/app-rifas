@@ -19,6 +19,8 @@ class UpdateRaffleRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'ticket_price' => 'required|numeric|min:0.01',
+            'bulk_price' => ['nullable', 'numeric', 'min:0.01', Rule::requiredIf(fn () => !empty($this->bulk_from))],
+            'bulk_from' => ['nullable', 'integer', 'min:2', Rule::requiredIf(fn () => !empty($this->bulk_price))],
             'total_numbers' => 'required|integer|min:1|max:100000',
             'status' => ['required', Rule::in(['draft', 'active', 'completed'])],
             'draw_date' => 'nullable|date',

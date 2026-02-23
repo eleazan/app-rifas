@@ -29,7 +29,7 @@ class DashboardController extends Controller
             : 0;
 
         $revenue = $activeRaffle
-            ? $ticketsSold * (float) $activeRaffle->ticket_price
+            ? (float) Ticket::where('raffle_id', $activeRaffle->id)->sum('price_paid')
             : 0;
 
         $sellersCount = Seller::where('is_active', true)->count();
@@ -96,8 +96,9 @@ class DashboardController extends Controller
                 ->count()
             : 0;
 
-        $ticketPrice = $activeRaffle ? (float) $activeRaffle->ticket_price : 0;
-        $myRevenue = $myTickets * $ticketPrice;
+        $myRevenue = ($seller && $activeRaffle)
+            ? (float) Ticket::where('seller_id', $seller->id)->where('raffle_id', $activeRaffle->id)->sum('price_paid')
+            : 0;
         $myCommission = $seller ? $myRevenue * ((float) $seller->commission_pct / 100) : 0;
 
         $recentSales = [];

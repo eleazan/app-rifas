@@ -25,10 +25,15 @@ class NotificationLogService
             $first['buyer_phone'] ?? null,
         );
 
+        $count = count($ticketData);
+        $effectivePrice = ($raffle->bulk_price && $raffle->bulk_from && $count >= $raffle->bulk_from)
+            ? $raffle->bulk_price
+            : $raffle->ticket_price;
+
         $notification = new TicketPurchasedNotification(
             $ticketData,
             $raffle->name,
-            $raffle->ticket_price,
+            $effectivePrice,
             route('rifa.show', $raffle->slug),
             $raffle->draw_date?->format('d/m/Y'),
         );
@@ -122,10 +127,15 @@ class NotificationLogService
             null,
         );
 
+        $resendCount = count($ticketData);
+        $resendPrice = ($raffle->bulk_price && $raffle->bulk_from && $resendCount >= $raffle->bulk_from)
+            ? $raffle->bulk_price
+            : $raffle->ticket_price;
+
         $notification = new TicketPurchasedNotification(
             $ticketData,
             $raffle->name,
-            $raffle->ticket_price,
+            $resendPrice,
             route('rifa.show', $raffle->slug),
             $raffle->draw_date?->format('d/m/Y'),
         );
