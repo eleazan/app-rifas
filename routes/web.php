@@ -14,6 +14,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\TicketLockController;
+use App\Http\Controllers\WhatsappSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,6 +34,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('draw', [DrawController::class, 'draw'])->name('draw.execute');
     Route::resource('organizers', OrganizerController::class)->except(['show']);
     Route::resource('sponsors', SponsorController::class)->except(['show']);
+
+    Route::get('settings/whatsapp', [WhatsappSettingController::class, 'show'])->name('settings.whatsapp');
+    Route::post('settings/whatsapp/activate', [WhatsappSettingController::class, 'activate'])->name('settings.whatsapp.activate');
+    Route::get('settings/whatsapp/status', [WhatsappSettingController::class, 'status'])->name('settings.whatsapp.status');
+    Route::post('settings/whatsapp/deactivate', [WhatsappSettingController::class, 'deactivate'])->name('settings.whatsapp.deactivate');
+    Route::post('settings/whatsapp/test', [WhatsappSettingController::class, 'test'])->name('settings.whatsapp.test');
 });
 
 Route::middleware(['auth', 'role:admin,seller'])->group(function () {
