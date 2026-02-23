@@ -45,6 +45,8 @@ class SellController extends Controller
                 'id' => $raffle->id,
                 'name' => $raffle->name,
                 'ticket_price' => $raffle->ticket_price,
+                'bulk_price' => $raffle->bulk_price,
+                'bulk_from' => $raffle->bulk_from,
                 'total_numbers' => $raffle->total_numbers,
             ],
             'soldNumbers' => $soldNumbers,
