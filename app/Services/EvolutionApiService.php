@@ -98,36 +98,38 @@ class EvolutionApiService
         }
     }
 
-    public function sendText(string $phone, string $message): bool
+    public function isInstanceConnected(): bool
+    {
+        $state = $this->getConnectionState($this->instance);
+        return $state === 'open';
+    }
+
+    public function sendText(string $phone, string $message): void
     {
         if (!$this->isConfigured()) {
-            Log::warning('EvolutionAPI not configured, skipping WhatsApp message.');
-            return false;
+            throw new \RuntimeException('EvolutionAPI no está configurada (faltan credenciales).');
         }
 
         $phone = preg_replace('/[^0-9]/', '', $phone);
 
-        try {
-            $response = Http::withHeaders([
-                'apikey' => $this->apiKey,
-            ])->post("{$this->baseUrl}/message/sendText/{$this->instance}", [
-                'number' => $phone,
-                'text' => $message,
-            ]);
+        // Simulate human typing: ~40ms per char, capped at 4s, with ±300ms jitter
+        $typingDelay = min(strlen($message) * 40, 4000) + rand(-300, 300);
+        $typingDelay = max($typingDelay, 800);
 
-            if ($response->successful()) {
-                return true;
-            }
+        $response = Http::withHeaders([
+            'apikey' => $this->apiKey,
+        ])->post("{$this->baseUrl}/message/sendText/{$this->instance}", [
+            'number'  => $phone,
+            'text'    => $message,
+            'options' => [
+                'presence' => 'composing',
+                'delay'    => $typingDelay,
+            ],
+        ]);
 
-            Log::error('EvolutionAPI error', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            return false;
-        } catch (\Throwable $e) {
-            Log::error('EvolutionAPI exception: ' . $e->getMessage());
-            return false;
+        if (!$response->successful()) {
+            $error = $response->json('message') ?? $response->body();
+            throw new \RuntimeException("EvolutionAPI error ({$response->status()}): {$error}");
         }
     }
 }

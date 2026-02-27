@@ -13,6 +13,9 @@ export default function Edit({ raffle, organizers, sponsors }) {
         draw_date: raffle.draw_date || '',
         organizer_id: raffle.organizer_id || '',
         sponsors: raffle.sponsors || [],
+        paella_total: raffle.paella_total || '',
+        paella_price: raffle.paella_price || '',
+        paella_deadline: raffle.paella_deadline || '',
     });
 
     const toggleSponsor = (id) => {
@@ -202,6 +205,46 @@ export default function Edit({ raffle, organizers, sponsors }) {
                                 {errors.sponsors && <label className="label"><span className="label-text-alt text-error">{errors.sponsors}</span></label>}
                             </div>
                         )}
+
+                        {/* Paella */}
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                            <p className="text-sm font-medium text-slate-600">Paella <span className="text-slate-400 font-normal">(opcional)</span></p>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="form-control w-full">
+                                    <label className="label py-1">
+                                        <span className="label-text text-slate-600">Total raciones</span>
+                                    </label>
+                                    <input type="number" min="1"
+                                           className={`input input-bordered w-full bg-white ${errors.paella_total ? 'input-error' : ''}`}
+                                           value={data.paella_total}
+                                           onChange={(e) => setData('paella_total', e.target.value)}
+                                           placeholder="50" />
+                                    {errors.paella_total && <label className="label"><span className="label-text-alt text-error">{errors.paella_total}</span></label>}
+                                </div>
+                                <div className="form-control w-full">
+                                    <label className="label py-1">
+                                        <span className="label-text text-slate-600">Precio (€)</span>
+                                    </label>
+                                    <input type="number" step="0.01" min="0.01"
+                                           className={`input input-bordered w-full bg-white ${errors.paella_price ? 'input-error' : ''}`}
+                                           value={data.paella_price}
+                                           onChange={(e) => setData('paella_price', e.target.value)}
+                                           placeholder="10.00" />
+                                    {errors.paella_price && <label className="label"><span className="label-text-alt text-error">{errors.paella_price}</span></label>}
+                                </div>
+                                <div className="form-control w-full">
+                                    <label className="label py-1">
+                                        <span className="label-text text-slate-600">Fecha límite venta</span>
+                                    </label>
+                                    <input type="date"
+                                           className={`input input-bordered w-full bg-white ${errors.paella_deadline ? 'input-error' : ''}`}
+                                           value={data.paella_deadline}
+                                           onChange={(e) => setData('paella_deadline', e.target.value)} />
+                                    {errors.paella_deadline && <label className="label"><span className="label-text-alt text-error">{errors.paella_deadline}</span></label>}
+                                </div>
+                            </div>
+                            <p className="text-xs text-slate-400">Raciones compartidas entre valenciana y vegana. Deja en blanco para deshabilitar.</p>
+                        </div>
 
                         <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                             <button type="submit" disabled={processing}

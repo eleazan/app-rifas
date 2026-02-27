@@ -21,6 +21,9 @@ class Raffle extends Model
         'status',
         'draw_date',
         'organizer_id',
+        'paella_total',
+        'paella_price',
+        'paella_deadline',
     ];
 
     protected static function booted(): void
@@ -55,10 +58,13 @@ class Raffle extends Model
     protected function casts(): array
     {
         return [
-            'ticket_price' => 'decimal:2',
-            'bulk_price' => 'decimal:2',
-            'bulk_from' => 'integer',
-            'draw_date' => 'date',
+            'ticket_price'            => 'decimal:2',
+            'bulk_price'              => 'decimal:2',
+            'bulk_from'               => 'integer',
+            'paella_total'    => 'integer',
+            'paella_price'    => 'decimal:2',
+            'paella_deadline' => 'date',
+            'draw_date'               => 'date',
         ];
     }
 
@@ -85,6 +91,11 @@ class Raffle extends Model
     public function draws(): HasMany
     {
         return $this->hasMany(Draw::class);
+    }
+
+    public function paellaSales(): HasMany
+    {
+        return $this->hasMany(\App\Models\PaellaSale::class);
     }
 
     public function scopeActive($query)

@@ -16,6 +16,8 @@ use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\TicketLockController;
 use App\Http\Controllers\WhatsappSettingController;
 use App\Http\Controllers\GmailSettingController;
+use App\Http\Controllers\PaellaSellController;
+use App\Http\Controllers\PaellaSalesController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -53,6 +55,9 @@ Route::middleware(['auth', 'role:admin,seller'])->group(function () {
     Route::post('ticket-locks/sync', [TicketLockController::class, 'sync'])->name('ticket-locks.sync');
     Route::post('ticket-locks/release', [TicketLockController::class, 'release'])->name('ticket-locks.release');
 
+    Route::get('paella/ventas', [PaellaSalesController::class, 'index'])->name('paella.sales');
+
+
     Route::get('notification-logs', [NotificationLogController::class, 'index'])->name('notification-logs.index');
     Route::put('notification-logs/{notificationLog}', [NotificationLogController::class, 'update'])->name('notification-logs.update');
     Route::post('notification-logs/{notificationLog}/resend', [NotificationLogController::class, 'resend'])->name('notification-logs.resend');
@@ -63,6 +68,8 @@ Route::middleware(['auth', 'role:seller'])->group(function () {
     Route::get('sell', [SellController::class, 'index'])->name('sell.index');
     Route::post('sell', [SellController::class, 'store'])->name('sell.store');
     Route::get('my-sales', [MySalesController::class, 'index'])->name('my-sales.index');
+    Route::get('paella/vender', [PaellaSellController::class, 'index'])->name('paella.sell');
+    Route::post('paella/vender', [PaellaSellController::class, 'store'])->name('paella.store');
 });
 
 Route::middleware('auth')->group(function () {

@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Jobs\SendWhatsappMessage;
 use App\Models\BuyerNotifiable;
 use App\Models\NotificationLog;
 use App\Models\Raffle;
 use App\Notifications\TicketPurchasedNotification;
 use App\Services\GmailService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class NotificationLogService
 {
@@ -60,6 +60,25 @@ class NotificationLogService
             ? $this->buildEmailSummary($notification, $buyer)
             : $this->buildWhatsappMessage($notification);
 
+        if ($channel === 'whatsapp') {
+            $log = NotificationLog::create([
+                'sale_id' => $saleId,
+                'raffle_id' => $raffle->id,
+                'seller_id' => $sellerId,
+                'channel' => 'whatsapp',
+                'recipient' => $recipient,
+                'message' => $message,
+                'status' => 'queued',
+            ]);
+
+            $delay = rand(5, 20);
+            SendWhatsappMessage::dispatch($log->id, $recipient, $message)
+                ->onQueue('whatsapp')
+                ->delay(now()->addSeconds($delay));
+
+            return;
+        }
+
         $log = NotificationLog::create([
             'sale_id' => $saleId,
             'raffle_id' => $raffle->id,
@@ -71,27 +90,23 @@ class NotificationLogService
         ]);
 
         try {
-            if ($channel === 'email') {
-                $gmail = app(GmailService::class);
-                if ($gmail->isConnected()) {
-                    $mailMessage = $notification->toMail($buyer);
-                    $gmail->sendEmail(
-                        $buyer->email,
-                        $mailMessage->subject ?? 'Confirmación de boletos',
-                        $gmail->buildHtmlFromMailMessage($mailMessage)
-                    );
-                } else {
-                    $buyer->notify($notification->onlyVia('mail'));
-                }
+            $gmail = app(GmailService::class);
+            if ($gmail->isConnected()) {
+                $mailMessage = $notification->toMail($buyer);
+                $gmail->sendEmail(
+                    $buyer->email,
+                    $mailMessage->subject ?? 'Confirmación de boletos',
+                    $gmail->buildHtmlFromMailMessage($mailMessage)
+                );
             } else {
-                $notification->toWhatsapp($buyer);
+                $buyer->notify($notification->onlyVia('mail'));
             }
         } catch (\Throwable $e) {
             $log->update([
                 'status' => 'failed',
                 'error' => $e->getMessage(),
             ]);
-            Log::error("Notification ({$channel}) failed for {$recipient}: " . $e->getMessage());
+            Log::error("Notification (email) failed for {$recipient}: " . $e->getMessage());
         }
     }
 

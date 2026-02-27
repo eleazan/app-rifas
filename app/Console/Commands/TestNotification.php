@@ -44,15 +44,14 @@ class TestNotification extends Command
         $this->line($message);
         $this->line('');
 
-        $success = $evolution->sendText($phone, $message);
-
-        if ($success) {
+        try {
+            $evolution->sendText($phone, $message);
             $this->info('Mensaje enviado correctamente!');
             return self::SUCCESS;
+        } catch (\Throwable $e) {
+            $this->error('Error al enviar el mensaje: ' . $e->getMessage());
+            return self::FAILURE;
         }
-
-        $this->error('Error al enviar el mensaje. Revisa los logs para mas detalles.');
-        return self::FAILURE;
     }
 
     protected function purchaseMessage(string $name): string
