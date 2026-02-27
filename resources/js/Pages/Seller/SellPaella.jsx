@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
+import { normalizePhone } from '@/lib/phone';
 
 export default function SellPaella({ raffle, stock, seller }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -131,13 +132,13 @@ export default function SellPaella({ raffle, stock, seller }) {
                             {/* Nombre */}
                             <div className="form-control w-full">
                                 <label className="label">
-                                    <span className="label-text font-medium text-slate-700">Nombre del comprador</span>
+                                    <span className="label-text font-medium text-slate-700">Nombre completo</span>
                                 </label>
                                 <input type="text"
                                        className={`input input-bordered w-full ${errors.buyer_name ? 'input-error' : ''}`}
                                        value={data.buyer_name}
                                        onChange={(e) => setData('buyer_name', e.target.value)}
-                                       placeholder="Ej: García" />
+                                       placeholder="Ej: Juan García López" />
                                 {errors.buyer_name && <label className="label"><span className="label-text-alt text-error">{errors.buyer_name}</span></label>}
                             </div>
 
@@ -150,7 +151,8 @@ export default function SellPaella({ raffle, stock, seller }) {
                                        className={`input input-bordered w-full ${errors.buyer_phone ? 'input-error' : ''}`}
                                        value={data.buyer_phone}
                                        onChange={(e) => setData('buyer_phone', e.target.value)}
-                                       placeholder="34612345678" />
+                                       onBlur={(e) => setData('buyer_phone', normalizePhone(e.target.value))}
+                                       placeholder="612345678" />
                                 {errors.buyer_phone && <label className="label"><span className="label-text-alt text-error">{errors.buyer_phone}</span></label>}
                             </div>
 

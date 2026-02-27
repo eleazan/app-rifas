@@ -3,6 +3,7 @@ import NumberGrid from '@/Components/NumberGrid';
 import { Head, useForm } from '@inertiajs/react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
+import { normalizePhone } from '@/lib/phone';
 
 export default function Sell({ raffle, soldNumbers, lockedNumbers: initialLocked = [], seller }) {
     if (!raffle) {
@@ -178,7 +179,8 @@ export default function Sell({ raffle, soldNumbers, lockedNumbers: initialLocked
                                                className={`input input-bordered w-full ${errors.buyer_phone ? 'input-error' : ''}`}
                                                value={data.buyer_phone}
                                                onChange={(e) => setData(d => ({ ...d, buyer_phone: e.target.value, contact_method: e.target.value ? 'whatsapp' : (d.buyer_email ? 'email' : 'whatsapp') }))}
-                                               placeholder="Ej: 34612345678" />
+                                               onBlur={(e) => setData(d => ({ ...d, buyer_phone: normalizePhone(e.target.value) }))}
+                                               placeholder="Ej: 612345678" />
                                         {errors.buyer_phone && <label className="label"><span className="label-text-alt text-error">{errors.buyer_phone}</span></label>}
                                     </div>
 

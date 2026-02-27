@@ -82,10 +82,6 @@ export default function Rifa({ raffle }) {
         const date = new Date(dateStr + 'T00:00:00');
         return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
     };
-    const progress = raffle.total_numbers > 0
-        ? Math.round((raffle.sold_count / raffle.total_numbers) * 100)
-        : 0;
-
     return (
         <PublicLayout>
             <Head title={raffle.name} />
@@ -152,27 +148,6 @@ export default function Rifa({ raffle }) {
                             </p>
                             <p className="text-xs text-slate-500 uppercase tracking-wider">premios</p>
                         </div>
-                        <div className="w-px h-10 bg-white/10"></div>
-                        <div className="text-center">
-                            <p className="text-3xl font-extrabold text-amber-400" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                                {progress}%
-                            </p>
-                            <p className="text-xs text-slate-500 uppercase tracking-wider">vendido</p>
-                        </div>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="max-w-md mx-auto pt-2">
-                        <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                            <div className="h-full rounded-full transition-all duration-1000"
-                                 style={{
-                                     width: `${progress}%`,
-                                     background: 'linear-gradient(90deg, #fbbf24, #f59e0b)',
-                                 }} />
-                        </div>
-                        <p className="text-xs text-slate-500 mt-1.5">
-                            {raffle.sold_count} de {raffle.total_numbers} boletos vendidos
-                        </p>
                     </div>
                 </div>
 

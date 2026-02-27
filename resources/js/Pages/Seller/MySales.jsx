@@ -20,8 +20,9 @@ function StatCard({ icon, label, value, sub, accent }) {
     );
 }
 
-export default function MySales({ sales, stats, seller, raffleName }) {
+export default function MySales({ sales, paellaSales = [], stats, seller, raffleName }) {
     const totalTickets = sales.reduce((sum, s) => sum + s.numbers.length, 0);
+    const totalPaellaTickets = paellaSales.reduce((sum, s) => sum + s.quantity, 0);
 
     return (
         <AuthenticatedLayout header="Mis Ventas">
@@ -39,9 +40,10 @@ export default function MySales({ sales, stats, seller, raffleName }) {
                               accent="bg-violet-50 text-violet-600" />
                 </div>
 
-                {/* Header */}
+                {/* Ticket sales header */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
+                        <h2 className="font-bold text-slate-800" style={{ fontFamily: "'Outfit', sans-serif" }}>Boletos de rifa</h2>
                         <p className="text-slate-500 text-sm">
                             {sales.length} {sales.length === 1 ? 'venta' : 'ventas'} — {totalTickets} boletos
                             {raffleName && <span className="text-slate-400"> en {raffleName}</span>}
@@ -56,7 +58,7 @@ export default function MySales({ sales, stats, seller, raffleName }) {
                     </Link>
                 </div>
 
-                {/* Sales table */}
+                {/* Ticket sales table */}
                 {sales.length > 0 ? (
                     <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
                         <div className="overflow-x-auto">
@@ -109,16 +111,69 @@ export default function MySales({ sales, stats, seller, raffleName }) {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/60">
-                        <span className="text-5xl mb-4 block">🎫</span>
-                        <h3 className="text-lg font-bold text-slate-700 mb-1" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                            No tienes ventas todavia
-                        </h3>
-                        <p className="text-sm text-slate-400 mb-4">Empieza a vender boletos</p>
-                        <Link href={route('sell.index')} className="btn btn-sm text-slate-900 border-0"
-                              style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
-                            Vender Boletos
-                        </Link>
+                    <div className="text-center py-12 bg-white rounded-2xl border border-slate-200/60">
+                        <span className="text-4xl mb-3 block">🎫</span>
+                        <p className="text-sm text-slate-400">No tienes ventas de boletos todavia</p>
+                    </div>
+                )}
+
+                {/* Paella sales header */}
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h2 className="font-bold text-slate-800" style={{ fontFamily: "'Outfit', sans-serif" }}>Paella</h2>
+                        <p className="text-slate-500 text-sm">
+                            {paellaSales.length} {paellaSales.length === 1 ? 'venta' : 'ventas'} — {totalPaellaTickets} tickets
+                        </p>
+                    </div>
+                    <Link href={route('paella.sell')} className="btn btn-sm text-slate-900 border-0"
+                          style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Vender paella
+                    </Link>
+                </div>
+
+                {/* Paella sales table */}
+                {paellaSales.length > 0 ? (
+                    <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="table">
+                                <thead>
+                                    <tr className="bg-slate-50/50">
+                                        <th className="text-slate-500 font-medium">Comprador</th>
+                                        <th className="text-slate-500 font-medium">Telefono</th>
+                                        <th className="text-slate-500 font-medium">Tipo</th>
+                                        <th className="text-slate-500 font-medium">Cantidad</th>
+                                        <th className="text-slate-500 font-medium">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {paellaSales.map((sale) => (
+                                        <tr key={sale.id} className="hover:bg-slate-50/50">
+                                            <td className="font-semibold text-slate-800">{sale.buyer_name}</td>
+                                            <td className="text-slate-600 text-sm">📱 {sale.buyer_phone}</td>
+                                            <td>
+                                                <span className={`badge badge-sm ${sale.type === 'vegana' ? 'badge-success' : 'badge-warning'}`}>
+                                                    {sale.type}
+                                                </span>
+                                            </td>
+                                            <td className="font-bold text-slate-800">{sale.quantity}</td>
+                                            <td className="text-slate-500 text-sm">
+                                                {new Date(sale.created_at).toLocaleDateString('es-ES', {
+                                                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
+                                                })}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-12 bg-white rounded-2xl border border-slate-200/60">
+                        <span className="text-4xl mb-3 block">🥘</span>
+                        <p className="text-sm text-slate-400">No tienes ventas de paella todavia</p>
                     </div>
                 )}
             </div>

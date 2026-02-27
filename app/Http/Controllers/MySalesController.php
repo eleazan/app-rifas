@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaellaSale;
 use App\Models\Raffle;
 use App\Models\Seller;
 use App\Models\Ticket;
@@ -15,9 +16,10 @@ class MySalesController extends Controller
 
         if (!$seller) {
             return Inertia::render('Seller/MySales', [
-                'sales' => [],
-                'stats' => ['total_tickets' => 0, 'total_sales' => 0, 'commission' => '0.00'],
-                'seller' => null,
+                'sales'       => [],
+                'paellaSales' => [],
+                'stats'       => ['total_tickets' => 0, 'total_sales' => 0, 'commission' => '0.00'],
+                'seller'      => null,
             ]);
         }
 
@@ -41,20 +43,34 @@ class MySalesController extends Controller
             ];
         })->values();
 
+        $paellaSales = PaellaSale::where('seller_id', $seller->id)
+            ->when($activeRaffle, fn ($q) => $q->where('raffle_id', $activeRaffle->id))
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($sale) => [
+                'id'          => $sale->id,
+                'buyer_name'  => $sale->buyer_name,
+                'buyer_phone' => $sale->buyer_phone,
+                'type'        => $sale->type,
+                'quantity'    => $sale->quantity,
+                'created_at'  => $sale->created_at->toISOString(),
+            ])->values();
+
         $totalTickets = $tickets->count();
         $totalRevenue = (float) $tickets->sum('price_paid');
         $commission = $totalRevenue * ((float) $seller->commission_pct / 100);
 
         return Inertia::render('Seller/MySales', [
-            'sales' => $sales,
-            'stats' => [
-                'total_tickets' => $totalTickets,
-                'total_sales' => number_format($totalRevenue, 2),
-                'commission' => number_format($commission, 2),
+            'sales'       => $sales,
+            'paellaSales' => $paellaSales,
+            'stats'       => [
+                'total_tickets'  => $totalTickets,
+                'total_sales'    => number_format($totalRevenue, 2),
+                'commission'     => number_format($commission, 2),
                 'commission_pct' => $seller->commission_pct,
             ],
-            'seller' => ['id' => $seller->id, 'name' => $seller->name],
-            'raffleName' => $activeRaffle?->name,
+            'seller'      => ['id' => $seller->id, 'name' => $seller->name],
+            'raffleName'  => $activeRaffle?->name,
         ]);
     }
 }
