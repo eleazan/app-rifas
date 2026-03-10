@@ -35,6 +35,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('tickets', TicketController::class)->only(['index', 'create', 'store', 'destroy']);
     Route::get('draw', [DrawController::class, 'index'])->name('draw.index');
     Route::post('draw', [DrawController::class, 'draw'])->name('draw.execute');
+    Route::post('draw/resend', [DrawController::class, 'resend'])->name('draw.resend');
     Route::resource('organizers', OrganizerController::class)->except(['show']);
     Route::resource('sponsors', SponsorController::class)->except(['show']);
 

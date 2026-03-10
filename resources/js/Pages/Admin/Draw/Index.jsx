@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 function DrawAnimation({ totalNumbers, winningNumber, onComplete }) {
     const [display, setDisplay] = useState('???');
@@ -150,6 +150,7 @@ export default function Index({ raffle, prizes, stats }) {
     const [drawResult, setDrawResult] = useState(null);
     const [confirmPrize, setConfirmPrize] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [resendingId, setResendingId] = useState(null);
 
     // When flash arrives (after Inertia re-render), start animation
     useEffect(() => {
@@ -181,6 +182,14 @@ export default function Index({ raffle, prizes, stats }) {
         setConfirmPrize(null);
         setIsLoading(false);
         router.visit(route('draw.index'), { preserveScroll: true });
+    };
+
+    const handleResend = (prizeId) => {
+        setResendingId(prizeId);
+        router.post(route('draw.resend'), { prize_id: prizeId }, {
+            preserveScroll: true,
+            onFinish: () => setResendingId(null),
+        });
     };
 
     if (!raffle) {
@@ -303,27 +312,76 @@ export default function Index({ raffle, prizes, stats }) {
                         <h3 className="text-lg font-bold text-slate-800 mb-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
                             Premios sorteados ({drawnPrizes.length})
                         </h3>
+                        {flash.success && (
+                            <div className="alert alert-success mb-4 text-sm">
+                                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                {flash.success}
+                            </div>
+                        )}
+                        {flash.error && (
+                            <div className="alert alert-error mb-4 text-sm">
+                                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                {flash.error}
+                            </div>
+                        )}
                         <div className="bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
                             <div className="divide-y divide-slate-100">
                                 {drawnPrizes.map((prize) => (
-                                    <div key={prize.id} className="flex items-center gap-4 px-5 py-4">
+                                    <div key={prize.id} className="flex items-start gap-4 px-5 py-4">
                                         {prize.image ? (
-                                            <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                                            <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 mt-0.5">
                                                 <img src={prize.image} alt={prize.name} className="w-full h-full object-cover" />
                                             </div>
                                         ) : (
-                                            <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center shrink-0">
+                                            <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 mt-0.5">
                                                 <span className="text-xl">🎁</span>
                                             </div>
                                         )}
                                         <div className="flex-1 min-w-0">
                                             <p className="font-semibold text-slate-800">{prize.name}</p>
-                                            <p className="text-xs text-slate-400">Sorteado: {prize.drawn_at}</p>
+                                            <p className="text-xs text-slate-400 mb-1">Sorteado: {prize.drawn_at}</p>
+                                            {prize.winner && (
+                                                <div className="mt-1 space-y-0.5">
+                                                    <p className="text-sm text-slate-700 font-medium">
+                                                        {prize.winner.name}
+                                                    </p>
+                                                    {prize.winner.phone && (
+                                                        <p className="text-xs text-slate-500">{prize.winner.phone}</p>
+                                                    )}
+                                                    {prize.winner.seller && (
+                                                        <p className="text-xs text-slate-400">
+                                                            Vendedor: <span className="text-slate-500">{prize.winner.seller}</span>
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
-                                        <span className="font-mono font-bold text-lg px-3 py-1 rounded-lg text-slate-900"
-                                              style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
-                                            #{prize.winning_number}
-                                        </span>
+                                        <div className="flex flex-col items-end gap-2 shrink-0">
+                                            <span className="font-mono font-bold text-lg px-3 py-1 rounded-lg text-slate-900"
+                                                  style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
+                                                #{prize.winning_number}
+                                            </span>
+                                            {prize.winner?.phone && (
+                                                <button
+                                                    onClick={() => handleResend(prize.id)}
+                                                    disabled={resendingId === prize.id}
+                                                    className="btn btn-xs btn-ghost text-emerald-600 hover:bg-emerald-50 gap-1"
+                                                >
+                                                    {resendingId === prize.id ? (
+                                                        <span className="loading loading-spinner loading-xs"></span>
+                                                    ) : (
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                        </svg>
+                                                    )}
+                                                    Reenviar WhatsApp
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
