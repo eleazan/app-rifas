@@ -18,6 +18,7 @@ use App\Http\Controllers\WhatsappSettingController;
 use App\Http\Controllers\GmailSettingController;
 use App\Http\Controllers\PaellaSellController;
 use App\Http\Controllers\PaellaSalesController;
+use App\Http\Controllers\SettlementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,6 +39,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('draw/resend', [DrawController::class, 'resend'])->name('draw.resend');
     Route::resource('organizers', OrganizerController::class)->except(['show']);
     Route::resource('sponsors', SponsorController::class)->except(['show']);
+
+    Route::get('settlements', [SettlementController::class, 'index'])->name('settlements.index');
+    Route::post('settlements', [SettlementController::class, 'store'])->name('settlements.store');
+    Route::delete('settlements/{settlement}', [SettlementController::class, 'destroy'])->name('settlements.destroy');
 
     Route::get('settings/whatsapp', [WhatsappSettingController::class, 'show'])->name('settings.whatsapp');
     Route::post('settings/whatsapp/activate', [WhatsappSettingController::class, 'activate'])->name('settings.whatsapp.activate');
